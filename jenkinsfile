@@ -11,21 +11,21 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {  
-                bat 'docker build -t chethiya123/nodeapi-test01:%BUILD_NUMBER% .'
+                bat 'docker build -t chethiya123/node_test_api:%BUILD_NUMBER% .'
             }
         }
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'samin-docker', variable: 'samindocker')]) {
+               withCredentials([string(credentialsId: 'test-dockerhubpwd', variable: 'test-dockerhubPassword')]) {
                     script {
-                        bat "docker login -u chethiya123 -p %samindocker%"
+                        bat "docker login -u chethiya123 -p %test-dockerhubPassword%"
                     }
                 }
             }
         }
         stage('Push Image') {
             steps {
-                bat 'docker push chethiya123/nodeapi-test01:%BUILD_NUMBER%'
+                bat 'docker push chethiya123/node_test_api:%BUILD_NUMBER%'
             }
         }
     }
