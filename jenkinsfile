@@ -1,0 +1,38 @@
+pipeline {
+    agent any 
+    
+    stages { 
+        stage('SCM Checkout') {
+            steps {
+                retry(3) {
+                    git branch: 'main', url: 'https://github.com/Chethiya2001/GitHub-Docker-and-Jenkins-CI-CD-Pipeline-Ex1.git'
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {  
+                bat 'docker build -t chethiya123/nodeapi-test01:%BUILD_NUMBER% .'
+            }
+        }
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([string(credentialsId: 'samin-docker', variable: 'samindocker')]) {
+                    script {
+                        bat "docker login -u chethiya123 -p %samindocker%"
+                    }
+                }
+            }
+        }
+        stage('Push Image') {
+            steps {
+                bat 'docker push chethiya123/nodeapi-test01:%BUILD_NUMBER%'
+            }
+        }
+    }
+    post {
+        always {
+            bat 'docker logout'
+        }
+    }
+
+}
